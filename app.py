@@ -15,47 +15,65 @@ st.set_page_config(
 
 @st.cache(allow_output_mutation=True, suppress_st_warning=True)
 def load_product_data():
-    """Load product data with multiple fallbacks"""
+    """Load product data with robust error handling"""
     try:
         with open('fashion_data_optimized.json', 'r') as f:
             data = json.load(f)
+        st.success(f"✅ Loaded {len(data)} products")
         return data
-    except:
-        return []
+    except Exception as e:
+        st.error(f"❌ Error loading data: {e}")
+        # Return fallback data
+        return [
+            {
+                "id": 1,
+                "title": "Sample Running Shoes",
+                "description": "Sports shoes for running",
+                "category": "shoes",
+                "price": 99.99,
+                "rating": 4.5,
+                "comparison": {
+                    "competitors": [
+                        {
+                            "store_name": "Amazon",
+                            "store_logo": "🛒",
+                            "price": 89.99,
+                            "in_stock": True,
+                            "rating": 4.4,
+                            "delivery_time": "2 days"
+                        },
+                        {
+                            "store_name": "Flipkart",
+                            "store_logo": "📦", 
+                            "price": 104.50,
+                            "in_stock": True,
+                            "rating": 4.2,
+                            "delivery_time": "3 days"
+                        }
+                    ],
+                    "best_deal": {
+                        "store_name": "Amazon",
+                        "price": 89.99
+                    }
+                }
+            }
+        ]
 
-# Enhanced product detection function
+# Enhanced product detection
 def analyze_fashion_product(uploaded_image):
     """Detect product type and return relevant comparisons"""
-    # Mock detection - replace with your actual model
-    # For demo, we'll detect based on some logic or random selection
-    
-    product_categories = {
-        'shoes': ['Running Shoes', 'Sneakers', 'Boots', 'Sandals'],
-        'clothing': ['T-Shirts', 'Jeans', 'Dresses', 'Jackets'], 
-        'accessories': ['Bags', 'Watches', 'Sunglasses', 'Jewelry']
-    }
-    
-    # Simple detection logic (replace with your model)
+    # Simple detection based on filename
     filename = uploaded_image.name.lower() if hasattr(uploaded_image, 'name') else ""
     
     if any(word in filename for word in ['shoe', 'sneaker', 'boot', 'footwear']):
         detected_type = 'shoes'
-        product_name = "Running Sneakers"
-    elif any(word in filename for word in ['shirt', 'tshirt', 'top', 'clothing']):
-        detected_type = 'clothing' 
-        product_name = "Cotton T-Shirt"
-    elif any(word in filename for word in ['bag', 'watch', 'accessory']):
-        detected_type = 'accessories'
-        product_name = "Leather Bag"
+        product_name = "Running Shoes"
+    elif any(word in filename for word in ['shirt', 'tshirt', 'top', 'cloth']):
+        detected_type = 'clothing'
+        product_name = "Cotton T-Shirt" 
     else:
-        # Random fallback
-        detected_type = np.random.choice(['shoes', 'clothing', 'accessories'])
-        product_names = {
-            'shoes': "Sports Shoes",
-            'clothing': "Casual T-Shirt", 
-            'accessories': "Fashion Bag"
-        }
-        product_name = product_names[detected_type]
+        detected_type = 'accessories'
+        product_name = "Fashion Accessory"
     
     return {
         'product_type': detected_type,
@@ -124,8 +142,10 @@ if uploaded_file is not None:
             ]
             
             if relevant_products:
+                st.success(f"Found {len(relevant_products)} {analysis['product_type']} products for comparison")
+                
                 # Show all relevant products with comparisons
-                for product in relevant_products[:3]:  # Show top 3 matches
+                for product in relevant_products:
                     with st.expander(f"🛍️ {product['title']} - ${product['price']:.2f}", expanded=True):
                         
                         # Product details
@@ -149,7 +169,7 @@ if uploaded_file is not None:
                                     'Discount': f"{product.get('discount', 0)}% OFF",
                                     'Rating': f"{product.get('rating', 'N/A')} ⭐",
                                     'Delivery': '2-3 days',
-                                    'Trust': '98%'
+                                    'Stock': '✅ In Stock'
                                 })
                                 
                                 # Competitors
@@ -158,10 +178,10 @@ if uploaded_file is not None:
                                     comparison_data.append({
                                         'Store': f"{comp['store_logo']} {comp['store_name']}",
                                         'Price': f"${comp['price']:.2f}",
-                                        'Discount': f"{comp['discount']}% OFF",
+                                        'Discount': f"{comp.get('discount', 0)}% OFF",
                                         'Rating': f"{comp['rating']} ⭐",
                                         'Delivery': comp['delivery_time'],
-                                        'Trust': f"{comp['trust_score']}%"
+                                        'Stock': stock_icon
                                     })
                                 
                                 # Display comparison
@@ -176,8 +196,11 @@ if uploaded_file is not None:
                                         st.success(f"🎯 **BEST DEAL:** {best['store_name']} at ${best['price']:.2f} (Save ${savings:.2f})")
                                     else:
                                         st.info(f"💡 **Competitive Price:** Our store offers the best value")
+                            else:
+                                st.warning("No comparison data available for this product")
             else:
-                st.warning(f"No {analysis['product_type']} products found in database")
+                st.error(f"❌ No {analysis['product_type']} products found in database")
+                st.info("Available categories: " + ", ".join(set(p.get('category', 'Unknown') for p in products_data)))
                 
             # Dupe detection details
             st.markdown("---")
@@ -185,13 +208,6 @@ if uploaded_file is not None:
             
             if analysis['potential_dupes'] > 0:
                 st.error(f"⚠️ **Warning:** {analysis['potential_dupes']} potential counterfeit products detected")
-                st.write("""
-                **Recommendations:**
-                - Purchase from trusted stores with high trust scores
-                - Check product reviews and ratings
-                - Verify seller authenticity
-                - Use secure payment methods
-                """)
             else:
                 st.success("✅ **Excellent:** No significant counterfeit risks detected")
                 
@@ -199,28 +215,11 @@ else:
     # Default view when no image uploaded
     st.info("👆 **Upload a fashion product image to get started**")
     
-    # Show sample of what's available
+    # Show available categories
     if products_data:
-        st.subheader("📦 Available Product Categories")
-        
-        categories = {}
-        for product in products_data:
-            cat = product.get('category', 'Unknown')
-            if cat not in categories:
-                categories[cat] = []
-            categories[cat].append(product)
-        
-        for category, products in categories.items():
-            with st.expander(f"🔹 {category.title()} ({len(products)} products)"):
-                for product in products[:2]:  # Show 2 samples per category
-                    st.write(f"**{product['title']}** - ${product['price']:.2f}")
-                    if 'comparison' in product and product['comparison']['best_deal']:
-                        best = product['comparison']['best_deal']
-                        st.write(f"   Best deal: {best['store_name']} - ${best['price']:.2f}")
+        categories = set(p.get('category', 'Unknown') for p in products_data)
+        st.write(f"**Available categories:** {', '.join(categories)}")
 
 # Footer
 st.markdown("---")
-st.markdown("""
-**🛍️ Fashion Dupe Detector & Price Comparison**  
-*AI-powered authenticity checking and multi-website price intelligence*
-""")
+st.markdown("**🛍️ Fashion Dupe Detector & Price Comparison** - AI-powered authenticity and price intelligence")
