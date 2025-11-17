@@ -1,14 +1,13 @@
 import json
 
-# Create comprehensive product database
-comprehensive_products = [
-    # SHOES
+# Create a properly formatted JSON file with all product categories
+comprehensive_data = [
     {
         "id": 1,
         "title": "Nike Running Shoes",
         "description": "Lightweight running shoes with air cushioning",
         "category": "shoes",
-        "articleType": "Sneakers",
+        "articleType": "Sneakers", 
         "gender": "Unisex",
         "color": "Black/White",
         "price": 129.99,
@@ -33,7 +32,7 @@ comprehensive_products = [
                     "trust_score": 97
                 },
                 {
-                    "store_id": "flipkart",
+                    "store_id": "flipkart", 
                     "store_name": "Flipkart",
                     "store_logo": "📦",
                     "price": 134.50,
@@ -45,25 +44,11 @@ comprehensive_products = [
                     "review_count": 156,
                     "delivery_time": "3 days",
                     "trust_score": 94
-                },
-                {
-                    "store_id": "myntra",
-                    "store_name": "Myntra",
-                    "store_logo": "👕",
-                    "price": 125.99,
-                    "original_price": 157.49,
-                    "discount": 20,
-                    "shipping": "Free shipping",
-                    "in_stock": True,
-                    "rating": 4.7,
-                    "review_count": 289,
-                    "delivery_time": "1-2 days",
-                    "trust_score": 96
                 }
             ],
             "best_deal": {
                 "store_id": "amazon",
-                "store_name": "Amazon",
+                "store_name": "Amazon", 
                 "price": 119.99,
                 "delivery_time": "2 days",
                 "rating": 4.5,
@@ -71,15 +56,13 @@ comprehensive_products = [
             }
         }
     },
-    
-    # CLOTHING
     {
         "id": 2,
         "title": "Cotton T-Shirt",
         "description": "100% cotton comfortable t-shirt",
         "category": "clothing",
         "articleType": "Tshirts",
-        "gender": "Men",
+        "gender": "Men", 
         "color": "Blue",
         "price": 24.99,
         "original_price": 34.99,
@@ -91,7 +74,7 @@ comprehensive_products = [
                 {
                     "store_id": "amazon",
                     "store_name": "Amazon",
-                    "store_logo": "🛒",
+                    "store_logo": "🛒", 
                     "price": 22.99,
                     "original_price": 32.99,
                     "discount": 30,
@@ -106,7 +89,7 @@ comprehensive_products = [
                     "store_id": "myntra",
                     "store_name": "Myntra",
                     "store_logo": "👕",
-                    "price": 26.50,
+                    "price": 26.50, 
                     "original_price": 37.85,
                     "discount": 30,
                     "shipping": "Free shipping",
@@ -121,18 +104,16 @@ comprehensive_products = [
                 "store_id": "amazon",
                 "store_name": "Amazon",
                 "price": 22.99,
-                "delivery_time": "2-3 days",
+                "delivery_time": "2-3 days", 
                 "rating": 4.3,
                 "trust_score": 96
             }
         }
     },
-    
-    # ACCESSORIES
     {
         "id": 3,
         "title": "Leather Handbag",
-        "description": "Genuine leather women's handbag",
+        "description": "Genuine leather women's handbag", 
         "category": "accessories",
         "articleType": "Bags",
         "gender": "Women",
@@ -151,7 +132,7 @@ comprehensive_products = [
                     "price": 79.99,
                     "original_price": 109.99,
                     "discount": 27,
-                    "shipping": "Free shipping",
+                    "shipping": "Free shipping", 
                     "in_stock": True,
                     "rating": 4.6,
                     "review_count": 156,
@@ -160,7 +141,7 @@ comprehensive_products = [
                 },
                 {
                     "store_id": "ajio",
-                    "store_name": "Ajio",
+                    "store_name": "Ajio", 
                     "store_logo": "🔥",
                     "price": 94.99,
                     "original_price": 124.99,
@@ -174,7 +155,7 @@ comprehensive_products = [
                 }
             ],
             "best_deal": {
-                "store_id": "amazon",
+                "store_id": "amazon", 
                 "store_name": "Amazon",
                 "price": 79.99,
                 "delivery_time": "3-4 days",
@@ -187,6 +168,7 @@ comprehensive_products = [
 
 # Save the file
 with open('fashion_data_optimized.json', 'w') as f:
-    json.dump(comprehensive_products, f, indent=2)
+    json.dump(comprehensive_data, f, indent=2)
 
-print("✅ Created comprehensive product database")
+print("✅ Created fashion_data_optimized.json with 3 product categories")
+print("📊 Contains: Shoes, Clothing, Accessories with price comparisons")
