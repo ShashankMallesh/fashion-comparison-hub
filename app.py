@@ -1,302 +1,214 @@
 import streamlit as st
 import pandas as pd
-import json
-import os
-from PIL import Image
 import numpy as np
+from PIL import Image
+import io
+import time
+import requests
+from datetime import datetime
 
 # Page configuration
 st.set_page_config(
     page_title="Fashion Comparison Hub",
-    page_icon="👕",
+    page_icon="👗",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-@st.cache(allow_output_mutation=True, suppress_st_warning=True)
-def load_product_data():
-    """Load product data with multiple fallbacks"""
-    files_to_try = [
-        'fashion_data_optimized.json',
-        'fashion_data_with_comparison.json', 
-        'fashion_data_small.json'
+# Custom CSS
+st.markdown("""
+<style>
+    .main-header {
+        font-size: 2.5rem;
+        color: #6a11cb;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    .sub-header {
+        font-size: 1.2rem;
+        color: #2575fc;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .dupe-yes {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        padding: 8px 15px;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+    .dupe-no {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        padding: 8px 15px;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+    .best-price {
+        border: 2px solid #28a745;
+        border-radius: 10px;
+        padding: 15px;
+        position: relative;
+    }
+    .best-price-tag {
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        background-color: #28a745;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .website-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 10px 0;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Header
+st.markdown('<h1 class="main-header">Fashion Comparison Hub</h1>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">AI-powered price comparison and dupe detection across multiple websites!</p>', unsafe_allow_html=True)
+
+# Mode selection
+col1, col2 = st.columns(2)
+with col1:
+    price_comparison = st.button("💰 Price Comparison", use_container_width=True)
+with col2:
+    dups_detection = st.button("🔍 Dups Detection", use_container_width=True)
+
+# Default mode
+current_mode = "Price Comparison"
+
+if dups_detection:
+    current_mode = "Dups Detection"
+
+st.write(f"**Current Mode:** {current_mode}")
+
+# File upload section
+st.subheader("Upload Product Image")
+uploaded_file = st.file_uploader(
+    "Upload an image of a fashion item to check for duplicates and compare prices",
+    type=['png', 'jpg', 'jpeg'],
+    help="Supported formats: PNG, JPG, JPEG"
+)
+
+# Initialize session state for results
+if 'analysis_complete' not in st.session_state:
+    st.session_state.analysis_complete = False
+if 'uploaded_image' not in st.session_state:
+    st.session_state.uploaded_image = None
+if 'is_dupe' not in st.session_state:
+    st.session_state.is_dupe = False
+
+# Process uploaded image
+if uploaded_file is not None:
+    # Display uploaded image
+    image = Image.open(uploaded_file)
+    st.session_state.uploaded_image = image
+    
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        st.image(image, caption="Uploaded Image", use_column_width=True)
+        
+        # Analyze button
+        if st.button("🔍 Analyze Image", use_container_width=True):
+            with st.spinner("Analyzing your image and searching for matches..."):
+                # Simulate API processing time
+                time.sleep(3)
+                
+                # Simulate dupe detection (random for demo)
+                st.session_state.is_dupe = np.random.choice([True, False], p=[0.6, 0.4])
+                st.session_state.analysis_complete = True
+                
+                st.success("Analysis complete!")
+                
+                # Rerun to show results
+                st.rerun()
+
+# Show results if analysis is complete
+if st.session_state.analysis_complete and st.session_state.uploaded_image is not None:
+    st.subheader("Analysis Results")
+    
+    # Dupe detection result
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.write("**Product Identified:** Women's Floral Summer Dress")
+        st.write(f"**Similarity Confidence:** {np.random.randint(85, 98)}%")
+    with col2:
+        if st.session_state.is_dupe:
+            st.markdown('<div class="dupe-yes">Potential Duplicate Detected</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="dupe-no">Original Product</div>', unsafe_allow_html=True)
+    
+    # Price comparison section
+    st.subheader("💰 Price Comparison Across Websites")
+    
+    # Sample price data
+    websites = [
+        {"name": "FashionOutlet", "price": 49.99, "rating": 4.2, "is_best": True},
+        {"name": "StyleHub", "price": 54.99, "rating": 4.0, "is_best": False},
+        {"name": "DressCode", "price": 59.99, "rating": 4.7, "is_best": False},
+        {"name": "TrendyBoutique", "price": 62.50, "rating": 3.8, "is_best": False},
+        {"name": "ChicBazaar", "price": 52.99, "rating": 4.3, "is_best": False},
     ]
     
-    for file_path in files_to_try:
-        try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-            return data
-        except FileNotFoundError:
-            continue
-        except Exception as e:
-            st.warning(f"⚠️ Error loading {file_path}: {e}")
-            continue
+    # Display price comparison
+    cols = st.columns(len(websites))
     
-    return []
-
-# Mock dupe detection function (replace with your actual model)
-def analyze_image_for_dupes(uploaded_image):
-    """Mock dupe detection - replace with your actual model inference"""
-    # This is where you'd load your .pth model and run inference
-    # For now, returning mock results
-    
-    # Simulate different product types based on filename or random selection
-    product_types = ['Footwear', 'Clothing', 'Accessories']
-    detected_type = np.random.choice(product_types)
-    
-    return {
-        'authenticity_score': np.random.uniform(0.85, 0.98),
-        'product_type': detected_type,
-        'similar_products_count': np.random.randint(5, 20),
-        'potential_dupes': np.random.randint(0, 3),
-        'confidence': np.random.uniform(0.75, 0.95)
-    }
-
-# Load data
-products_data = load_product_data()
-
-# Main app
-st.title("🛍️ Fashion Comparison Hub")
-st.markdown("AI-powered price comparison and dupe detection across multiple websites!")
-
-# Sidebar for navigation
-st.sidebar.title("🔍 Navigation")
-app_mode = st.sidebar.radio("Choose Mode:", ["Price Comparison", "Dupe Detection"])
-
-if app_mode == "Price Comparison":
-    # PRICE COMPARISON SECTION
-    
-    if products_data:
-        # Extract unique categories
-        categories = list(set([p.get('category', 'Unknown') for p in products_data]))
-        categories.sort()
-        
-        # Category selector
-        selected_category = st.selectbox(
-            "🔍 Select Product Category:",
-            categories,
-            index=0 if categories else 0
-        )
-        
-        # Filter products by selected category
-        filtered_products = [p for p in products_data if p.get('category') == selected_category]
-        
-        # Display category stats
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Total Products", len(products_data))
-        with col2:
-            st.metric(f"{selected_category} Products", len(filtered_products))
-        with col3:
-            if filtered_products:
-                avg_price = sum(p['price'] for p in filtered_products) / len(filtered_products)
-                st.metric("Average Price", f"${avg_price:.2f}")
+    for idx, (col, website) in enumerate(zip(cols, websites)):
+        with col:
+            if website["is_best"]:
+                st.markdown('<div class="best-price">', unsafe_allow_html=True)
+                st.markdown('<div class="best-price-tag">Best Price</div>', unsafe_allow_html=True)
             else:
-                st.metric("Average Price", "$0.00")
-        with col4:
-            st.metric("Stores Compared", "4+")
-        
-        st.markdown("---")
-        
-        # Display products from selected category
-        if filtered_products:
-            st.subheader(f"📦 {selected_category} Products")
+                st.markdown('<div class="website-card">', unsafe_allow_html=True)
             
-            # Product grid - 3 columns
-            cols = st.columns(3)
+            st.write(f"**{website['name']}**")
+            st.write(f"**${website['price']}**")
+            st.write(f"⭐ {website['rating']}/5")
             
-            for idx, product in enumerate(filtered_products):
-                col = cols[idx % 3]
-                
-                with col:
-                    with st.container():
-                        st.markdown(f"### {product['title']}")
-                        st.markdown(f"*{product.get('description', '')}*")
-                        
-                        # Price information
-                        col_price1, col_price2 = st.columns(2)
-                        with col_price1:
-                            st.markdown(f"**${product['price']:.2f}**")
-                            if 'original_price' in product:
-                                st.markdown(f"~~${product['original_price']:.2f}~~")
-                        with col_price2:
-                            if 'discount' in product:
-                                st.markdown(f"🔴 **{product['discount']}% OFF**")
-                            st.markdown(f"⭐ {product.get('rating', 'N/A')}")
-                        
-                        # Product details
-                        st.markdown(f"""
-                        **Type:** {product.get('articleType', 'N/A')}  
-                        **Color:** {product.get('color', 'N/A')}  
-                        **Gender:** {product.get('gender', 'Unisex')}
-                        """)
-                        
-                        # View details button
-                        if st.button(f"View Price Comparison", key=f"btn_{product['id']}"):
-                            st.session_state.selected_product = product
-                        
-                        st.markdown("---")
+            if st.button(f"View on {website['name']}", key=f"btn_{idx}", use_container_width=True):
+                st.info(f"Redirecting to {website['name']}...")
             
-            # Detailed product view when selected
-            if 'selected_product' in st.session_state:
-                product = st.session_state.selected_product
-                
-                st.markdown("---")
-                st.title(f"🔍 {product['title']}")
-                
-                col1, col2 = st.columns([1, 2])
-                
-                with col1:
-                    # Product image placeholder
-                    st.image(
-                        "https://via.placeholder.com/300x400/4B7BF5/FFFFFF?text=Fashion+Product",
-                        width=250
-                    )
-                    
-                    # Quick info
-                    st.markdown("### Product Details")
-                    st.write(f"**Category:** {product.get('category', 'N/A')}")
-                    st.write(f"**Type:** {product.get('articleType', 'N/A')}")
-                    st.write(f"**Color:** {product.get('color', 'N/A')}")
-                    st.write(f"**Season:** {product.get('season', 'N/A')}")
-                    st.write(f"**Rating:** {product.get('rating', 'N/A')} ⭐")
-                
-                with col2:
-                    # Price comparison section
-                    st.subheader("💰 Price Comparison")
-                    
-                    if 'comparison' in product:
-                        # Create comparison table
-                        comparison_data = []
-                        
-                        # Add our store
-                        comparison_data.append({
-                            'Store': '🏪 Our Store',
-                            'Price': f"${product['price']:.2f}",
-                            'Discount': f"{product.get('discount', 0)}%",
-                            'Rating': f"{product.get('rating', 'N/A')} ⭐",
-                            'Stock': '✅ In Stock',
-                            'Delivery': '2-3 days'
-                        })
-                        
-                        # Add competitors
-                        for competitor in product['comparison']['competitors']:
-                            stock_status = '✅ In Stock' if competitor['in_stock'] else '❌ Out of Stock'
-                            comparison_data.append({
-                                'Store': f"{competitor['store_logo']} {competitor['store_name']}",
-                                'Price': f"${competitor['price']:.2f}",
-                                'Discount': f"{competitor['discount']}%",
-                                'Rating': f"{competitor['rating']} ⭐",
-                                'Stock': stock_status,
-                                'Delivery': competitor['delivery_time']
-                            })
-                        
-                        # Display as dataframe
-                        df_comparison = pd.DataFrame(comparison_data)
-                        st.dataframe(df_comparison, use_container_width=True, hide_index=True)
-                        
-                        # Show best deal
-                        if product['comparison']['best_deal']:
-                            best_deal = product['comparison']['best_deal']
-                            savings = product['price'] - best_deal['price']
-                            if savings > 0:
-                                st.success(f"🎯 **Best Deal:** {best_deal['store_name']} - ${best_deal['price']:.2f} (Save ${savings:.2f})")
-                    
-                    else:
-                        st.info("No comparison data available for this product.")
-        
-        else:
-            st.warning(f"No products found in {selected_category} category.")
+            st.markdown('</div>', unsafe_allow_html=True)
     
-    else:
-        st.error("No product data loaded. Please check your data files.")
-
-else:
-    # DUPE DETECTION SECTION
+    # Additional features
+    st.subheader("📊 Price History")
     
-    st.header("🔍 AI Dupe Detection")
-    st.markdown("Upload a fashion product image to check authenticity and find similar products")
+    # Sample price history data
+    dates = pd.date_range(start='2024-01-01', end='2024-11-16', freq='M')
+    prices = [65, 62, 58, 55, 52, 50, 53, 55, 52, 49, 50]
     
-    # Image upload
-    uploaded_file = st.file_uploader(
-        "📁 Upload Fashion Product Image", 
-        type=['jpg', 'jpeg', 'png'],
-        help="Upload shoes, clothing, accessories for authenticity analysis"
-    )
+    price_history_df = pd.DataFrame({
+        'Date': dates,
+        'Price ($)': prices
+    })
     
-    if uploaded_file is not None:
-        # Display uploaded image
-        image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", width=300)
-        
-        # Analyze image
-        with st.spinner("🔬 Analyzing image for duplicates and authenticity..."):
-            analysis_results = analyze_image_for_dupes(uploaded_file)
-        
-        # Display analysis results
-        st.subheader("🕵️ Analysis Results")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            authenticity_score = analysis_results['authenticity_score']
-            st.metric("Authenticity Score", f"{authenticity_score*100:.1f}%")
-            st.progress(authenticity_score)
-        
-        with col2:
-            st.metric("Detected Type", analysis_results['product_type'])
-        
-        with col3:
-            st.metric("Similar Products", analysis_results['similar_products_count'])
-        
-        with col4:
-            st.metric("Potential Dupes", analysis_results['potential_dupes'])
-        
-        st.markdown("---")
-        
-        # Show relevant products based on detected type
-        detected_type = analysis_results['product_type']
-        relevant_products = [p for p in products_data if p.get('category') == detected_type]
-        
-        if relevant_products:
-            st.subheader(f"🧐 Similar {detected_type} Products")
-            
-            # Show top 3 similar products
-            for product in relevant_products[:3]:
-                with st.expander(f"👕 {product['title']} - ${product['price']:.2f}"):
-                    col1, col2 = st.columns([1, 2])
-                    
-                    with col1:
-                        confidence = analysis_results['confidence']
-                        st.write(f"**Match Confidence:** {confidence*100:.1f}%")
-                        price_diff = abs(product['price'] - 50)  # Mock price comparison
-                        st.write(f"**Price Difference:** ${price_diff:.2f}")
-                    
-                    with col2:
-                        if 'comparison' in product:
-                            best_deal = product['comparison']['best_deal']
-                            st.write(f"**Best Deal:** {best_deal['store_name']} - ${best_deal['price']:.2f}")
-        
-        # Model information
-        with st.expander("🤖 About Our Dupe Detection AI"):
-            st.markdown("""
-            **Model Features:**
-            - ✅ 30-epoch trained ResNet18 architecture
-            - ✅ 95%+ accuracy on fashion product validation
-            - ✅ Real-time image analysis
-            - ✅ Counterfeit detection
-            - ✅ Product categorization
-            
-            **Supported Product Types:**
-            - 👟 Footwear (Shoes, Sneakers, Boots)
-            - 👕 Clothing (T-shirts, Jeans, Dresses)
-            - 🎒 Accessories (Bags, Watches, Jewelry)
-            """)
+    st.line_chart(price_history_df.set_index('Date')['Price ($)'])
     
-    else:
-        st.info("👆 Please upload a fashion product image to start dupe detection")
+    # Similar products
+    st.subheader("🛍️ Similar Products")
+    
+    similar_products = [
+        {"name": "Blue Floral Dress", "price": 47.99, "similarity": 89},
+        {"name": "Summer Maxi Dress", "price": 55.99, "similarity": 78},
+        {"name": "Floral Print Midi", "price": 51.50, "similarity": 85},
+    ]
+    
+    for product in similar_products:
+        with st.expander(f"{product['name']} - ${product['price']} ({product['similarity']}% similar)"):
+            st.write(f"**Price:** ${product['price']}")
+            st.write(f"**Similarity Score:** {product['similarity']}%")
+            if st.button("Compare", key=f"compare_{product['name']}"):
+                st.info(f"Comparing with {product['name']}...")
 
 # Footer
 st.markdown("---")
-st.markdown("🛍️ **Fashion Comparison Hub** • AI-powered price intelligence and authenticity verification")
+st.markdown("**Fashion Comparison Hub** - AI-powered price intelligence and authenticity verification")
+st.caption(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
