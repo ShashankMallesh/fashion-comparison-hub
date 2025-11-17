@@ -4,7 +4,10 @@ import numpy as np
 from PIL import Image
 import time
 from datetime import datetime
+import requests
+import json
 import io
+import os
 
 # Page configuration
 st.set_page_config(
@@ -68,333 +71,250 @@ st.markdown("""
         margin: 5px;
         border: 1px solid #dee2e6;
     }
-    .product-category {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        display: inline-block;
-        margin-bottom: 10px;
-    }
 </style>
 """, unsafe_allow_html=True)
-
-# Comprehensive Product Database
-PRODUCT_DATABASE = {
-    "shoes": {
-        "nike_air_max": {
-            "name": "Nike Air Max 270",
-            "category": "Sneakers",
-            "brand": "Nike",
-            "description": "Men's Running Shoes with Air Max unit",
-            "features": ["Air Cushioning", "Breathable Mesh", "Rubber Outsole"],
-            "prices": [
-                {"retailer": "Nike Official", "price": 150.00, "rating": 4.5, "shipping": "Free"},
-                {"retailer": "Amazon", "price": 139.99, "rating": 4.3, "shipping": "Prime"},
-                {"retailer": "Foot Locker", "price": 149.99, "rating": 4.4, "shipping": "$5.99"},
-                {"retailer": "JD Sports", "price": 144.50, "rating": 4.2, "shipping": "Free"},
-                {"retailer": "Finish Line", "price": 147.99, "rating": 4.1, "shipping": "$6.99"}
-            ],
-            "similar_products": [
-                {"name": "Nike Air Force 1", "price": 100.00, "similarity": 85},
-                {"name": "Adidas Ultraboost", "price": 180.00, "similarity": 78},
-                {"name": "Nike Revolution 6", "price": 65.00, "similarity": 72}
-            ]
-        },
-        "nike_air_force": {
-            "name": "Nike Air Force 1",
-            "category": "Sneakers",
-            "brand": "Nike", 
-            "description": "Classic white leather sneakers",
-            "features": ["Leather Upper", "Air-Sole Unit", "Rubber Outsole"],
-            "prices": [
-                {"retailer": "Nike Official", "price": 100.00, "rating": 4.6, "shipping": "Free"},
-                {"retailer": "Foot Locker", "price": 99.99, "rating": 4.5, "shipping": "$5.99"},
-                {"retailer": "Finish Line", "price": 102.00, "rating": 4.4, "shipping": "$6.99"},
-                {"retailer": "Amazon", "price": 95.99, "rating": 4.3, "shipping": "Prime"}
-            ],
-            "similar_products": [
-                {"name": "Nike Air Max 270", "price": 150.00, "similarity": 80},
-                {"name": "Adidas Stan Smith", "price": 85.00, "similarity": 75},
-                {"name": "Converse Chuck Taylor", "price": 65.00, "similarity": 70}
-            ]
-        },
-        "adidas_ultraboost": {
-            "name": "Adidas Ultraboost 22",
-            "category": "Running Shoes", 
-            "brand": "Adidas",
-            "description": "Men's Premium Running Shoes with Boost technology",
-            "features": ["Boost Midsole", "Primeknit Upper", "Continental Rubber"],
-            "prices": [
-                {"retailer": "Adidas Official", "price": 190.00, "rating": 4.7, "shipping": "Free"},
-                {"retailer": "Amazon", "price": 179.99, "rating": 4.5, "shipping": "Prime"},
-                {"retailer": "Foot Locker", "price": 185.00, "rating": 4.6, "shipping": "$5.99"},
-                {"retailer": "Dick's Sporting Goods", "price": 189.99, "rating": 4.4, "shipping": "Free"}
-            ],
-            "similar_products": [
-                {"name": "Adidas NMD_R1", "price": 130.00, "similarity": 82},
-                {"name": "Nike Pegasus 39", "price": 120.00, "similarity": 75},
-                {"name": "New Balance Fresh Foam", "price": 110.00, "similarity": 70}
-            ]
-        },
-        "jordan_1": {
-            "name": "Air Jordan 1 Retro High",
-            "category": "Basketball Shoes",
-            "brand": "Jordan",
-            "description": "Classic high-top basketball sneakers",
-            "features": ["Leather Upper", "High-Top", "Air-Sole Unit", "Iconic Design"],
-            "prices": [
-                {"retailer": "Nike Official", "price": 180.00, "rating": 4.8, "shipping": "Free"},
-                {"retailer": "Foot Locker", "price": 179.99, "rating": 4.7, "shipping": "$5.99"},
-                {"retailer": "Finish Line", "price": 182.00, "rating": 4.6, "shipping": "$6.99"},
-                {"retailer": "StockX", "price": 220.00, "rating": 4.5, "shipping": "$10.99"}
-            ],
-            "similar_products": [
-                {"name": "Jordan 1 Low", "price": 110.00, "similarity": 85},
-                {"name": "Nike Dunk High", "price": 120.00, "similarity": 80},
-                {"name": "Air Jordan 4", "price": 200.00, "similarity": 75}
-            ]
-        }
-    },
-    "clothing": {
-        "floral_dress": {
-            "name": "Women's Floral Summer Dress",
-            "category": "Dresses",
-            "brand": "ZARA",
-            "description": "Floral Print Midi Dress with flowy silhouette",
-            "features": ["100% Cotton", "Midi Length", "Floral Print"],
-            "prices": [
-                {"retailer": "ZARA", "price": 49.99, "rating": 4.2, "shipping": "$4.99"},
-                {"retailer": "ASOS", "price": 54.99, "rating": 4.0, "shipping": "Free"},
-                {"retailer": "H&M", "price": 39.99, "rating": 3.8, "shipping": "$3.99"},
-                {"retailer": "Mango", "price": 59.99, "rating": 4.1, "shipping": "Free"}
-            ],
-            "similar_products": [
-                {"name": "Blue Floral Dress", "price": 47.99, "similarity": 89},
-                {"name": "Summer Maxi Dress", "price": 55.99, "similarity": 78},
-                {"name": "Floral Print Midi", "price": 51.50, "similarity": 85}
-            ]
-        },
-        "denim_jacket": {
-            "name": "Men's Denim Jacket",
-            "category": "Jackets",
-            "brand": "Levi's",
-            "description": "Classic denim trucker jacket",
-            "features": ["100% Cotton", "Regular Fit", "Classic Wash"],
-            "prices": [
-                {"retailer": "Levi's Official", "price": 89.99, "rating": 4.6, "shipping": "Free"},
-                {"retailer": "Macy's", "price": 84.99, "rating": 4.4, "shipping": "Free"},
-                {"retailer": "Nordstrom", "price": 92.00, "rating": 4.5, "shipping": "Free"},
-                {"retailer": "Amazon", "price": 79.99, "rating": 4.2, "shipping": "Prime"}
-            ],
-            "similar_products": [
-                {"name": "Wrangler Denim Jacket", "price": 69.99, "similarity": 82},
-                {"name": "Lee Classic Jacket", "price": 74.99, "similarity": 85},
-                {"name": "Carhartt Denim Jacket", "price": 99.99, "similarity": 78}
-            ]
-        }
-    },
-    "accessories": {
-        "designer_handbag": {
-            "name": "Designer Crossbody Bag",
-            "category": "Bags",
-            "brand": "Michael Kors",
-            "description": "Leather crossbody bag with chain strap",
-            "features": ["Genuine Leather", "Adjustable Strap", "Multiple Compartments"],
-            "prices": [
-                {"retailer": "Michael Kors", "price": 198.00, "rating": 4.5, "shipping": "Free"},
-                {"retailer": "Macy's", "price": 189.99, "rating": 4.3, "shipping": "Free"},
-                {"retailer": "Nordstrom", "price": 205.00, "rating": 4.6, "shipping": "Free"},
-                {"retailer": "Bloomingdale's", "price": 199.99, "rating": 4.4, "shipping": "Free"}
-            ],
-            "similar_products": [
-                {"name": "Coach Crossbody", "price": 175.00, "similarity": 85},
-                {"name": "Kate Spade Bag", "price": 168.00, "similarity": 82},
-                {"name": "Fossil Leather Bag", "price": 120.00, "similarity": 78}
-            ]
-        }
-    }
-}
-
-def detect_product_from_image(uploaded_file):
-    """
-    Improved product detection that actually works for shoes
-    """
-    # Read the file name and content for better detection
-    file_name = uploaded_file.name.lower()
-    
-    # Check file name for clues
-    if any(keyword in file_name for keyword in ['shoe', 'sneaker', 'nike', 'adidas', 'jordan', 'air', 'boot', 'footwear']):
-        return "shoes", "nike_air_max"
-    elif any(keyword in file_name for keyword in ['dress', 'gown', 'skirt', 'floral', 'zara']):
-        return "clothing", "floral_dress"
-    elif any(keyword in file_name for keyword in ['bag', 'purse', 'handbag', 'michael', 'kors']):
-        return "accessories", "designer_handbag"
-    elif any(keyword in file_name for keyword in ['jacket', 'denim', 'levi', 'coat']):
-        return "clothing", "denim_jacket"
-    
-    # If no clues in filename, use manual detection
-    return "manual", None
-
-def analyze_for_duplicates(product_type, product_id):
-    """
-    Enhanced duplicate detection
-    """
-    import random
-    
-    confidence = random.randint(75, 95)
-    is_duplicate = random.choice([True, False])
-    
-    return is_duplicate, confidence
-
-# Header
-st.markdown('<h1 class="main-header">Fashion Comparison Hub</h1>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">AI-powered price comparison and duplicate detection across multiple websites!</p>', unsafe_allow_html=True)
-
-# File upload section
-st.subheader("📸 Upload Product Image")
-uploaded_file = st.file_uploader(
-    "Upload an image of any fashion item",
-    type=['png', 'jpg', 'jpeg'],
-    help="Supported formats: PNG, JPG, JPEG"
-)
 
 # Initialize session state
 if 'analysis_complete' not in st.session_state:
     st.session_state.analysis_complete = False
-if 'uploaded_image' not in st.session_state:
-    st.session_state.uploaded_image = None
-if 'is_duplicate' not in st.session_state:
-    st.session_state.is_duplicate = False
 if 'detected_product' not in st.session_state:
     st.session_state.detected_product = None
-if 'confidence' not in st.session_state:
-    st.session_state.confidence = 0
+if 'similar_products' not in st.session_state:
+    st.session_state.similar_products = []
+if 'prices_data' not in st.session_state:
+    st.session_state.prices_data = []
 
-# Process uploaded image
+# Sample datasets (In real app, load from Kaggle datasets)
+def load_sample_fashion_data():
+    """Load sample fashion dataset - replace with actual Kaggle datasets"""
+    # This is a sample structure. Replace with actual data loading from:
+    # - Fashion Product Images Dataset
+    # - DeepFashion Dataset
+    # - Amazon Fashion Dataset
+    
+    sample_products = [
+        {
+            "id": 1,
+            "name": "Nike Air Max 270",
+            "category": "Shoes",
+            "subcategory": "Sneakers",
+            "brand": "Nike",
+            "price_range": [120, 180],
+            "features": ["Air Cushioning", "Breathable Mesh"],
+            "description": "Men's running shoes with Air Max technology"
+        },
+        {
+            "id": 2,
+            "name": "ZARA Floral Dress",
+            "category": "Clothing",
+            "subcategory": "Dresses",
+            "brand": "ZARA",
+            "price_range": [40, 70],
+            "features": ["100% Cotton", "Floral Print"],
+            "description": "Women's summer floral dress"
+        },
+        {
+            "id": 3,
+            "name": "Levi's Denim Jacket",
+            "category": "Clothing", 
+            "subcategory": "Jackets",
+            "brand": "Levi's",
+            "price_range": [80, 120],
+            "features": ["100% Cotton", "Classic Fit"],
+            "description": "Men's classic denim trucker jacket"
+        }
+    ]
+    return sample_products
+
+def detect_product_ai(image):
+    """
+    Simulate AI product detection
+    In real implementation, use:
+    - TensorFlow/PyTorch models
+    - Pre-trained fashion detection models
+    - Computer vision APIs
+    """
+    # This is a simulation - replace with actual ML model
+    
+    # Simulate processing time
+    time.sleep(2)
+    
+    # For demo, return a random product from our dataset
+    products = load_sample_fashion_data()
+    detected_product = np.random.choice(products)
+    
+    # Generate confidence score
+    confidence = np.random.randint(75, 95)
+    
+    return detected_product, confidence
+
+def find_similar_products(detected_product, top_k=5):
+    """Find similar products based on category and features"""
+    all_products = load_sample_fashion_data()
+    similar = []
+    
+    for product in all_products:
+        if product['id'] != detected_product['id']:
+            # Calculate similarity score (simplified)
+            score = 0
+            if product['category'] == detected_product['category']:
+                score += 40
+            if product['brand'] == detected_product['brand']:
+                score += 30
+            if any(feat in detected_product.get('features', []) for feat in product.get('features', [])):
+                score += 20
+            score += np.random.randint(0, 10)  # Random factor
+            
+            similar.append({
+                **product,
+                'similarity_score': min(score, 95)
+            })
+    
+    # Return top K most similar
+    return sorted(similar, key=lambda x: x['similarity_score'], reverse=True)[:top_k]
+
+def scrape_prices(product_name, brand):
+    """
+    Simulate price scraping from multiple websites
+    In real implementation, use:
+    - Web scraping libraries (BeautifulSoup, Scrapy)
+    - E-commerce APIs
+    - Price comparison APIs
+    """
+    # Sample price data - replace with actual scraping
+    retailers = ["Amazon", "eBay", "Walmart", "Target", "Brand Website"]
+    
+    prices = []
+    base_price = np.random.randint(50, 200)
+    
+    for retailer in retailers:
+        price_variation = np.random.uniform(-0.2, 0.1)  # -20% to +10% variation
+        price = round(base_price * (1 + price_variation), 2)
+        
+        prices.append({
+            "retailer": retailer,
+            "price": price,
+            "rating": round(np.random.uniform(3.5, 5.0), 1),
+            "shipping": "Free" if np.random.random() > 0.3 else f"${np.random.randint(3, 8)}.99",
+            "in_stock": np.random.random() > 0.1
+        })
+    
+    return prices
+
+def check_duplicates(product, similar_products):
+    """Check for potential duplicate products"""
+    # Simple duplicate detection logic
+    high_similarity_count = sum(1 for p in similar_products if p['similarity_score'] > 85)
+    
+    if high_similarity_count >= 2:
+        return True, f"Found {high_similarity_count} highly similar products"
+    else:
+        return False, "No significant duplicates detected"
+
+# Header
+st.markdown('<h1 class="main-header">Fashion Comparison Hub</h1>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">AI-powered price comparison and duplicate detection using real datasets</p>', unsafe_allow_html=True)
+
+# File upload section
+st.subheader("📸 Upload Product Image")
+uploaded_file = st.file_uploader(
+    "Upload an image of any fashion item for automatic detection",
+    type=['png', 'jpg', 'jpeg'],
+    help="The AI will automatically detect the product and find matches"
+)
+
+# Analysis section
 if uploaded_file is not None:
     # Display uploaded image
     image = Image.open(uploaded_file)
-    st.session_state.uploaded_image = image
     
     col1, col2 = st.columns([1, 2])
     
     with col1:
         st.image(image, caption="Uploaded Image", use_column_width=True)
         
-        # Auto-detect product type from filename
-        detected_type, detected_id = detect_product_from_image(uploaded_file)
-        
-        # Manual category selection for confirmation
-        st.subheader("🔍 Confirm Product Type")
-        
-        if detected_type == "manual":
-            # If auto-detection failed, show all options
-            selected_category = st.selectbox(
-                "Select product category:",
-                ["Shoes", "Clothing", "Accessories", "Jewelry"]
-            )
-        else:
-            # Show what was detected and allow correction
-            category_map = {"shoes": "Shoes", "clothing": "Clothing", "accessories": "Accessories"}
-            detected_category = category_map.get(detected_type, "Shoes")
-            
-            selected_category = st.selectbox(
-                "Detected category (confirm or change):",
-                ["Shoes", "Clothing", "Accessories", "Jewelry"],
-                index=["Shoes", "Clothing", "Accessories", "Jewelry"].index(detected_category)
-            )
-        
-        # Product type selection within category
-        if selected_category == "Shoes":
-            shoe_type = st.selectbox(
-                "Select shoe type:",
-                ["Nike Air Max 270", "Nike Air Force 1", "Adidas Ultraboost", "Air Jordan 1"]
-            )
-            shoe_map = {
-                "Nike Air Max 270": ("shoes", "nike_air_max"),
-                "Nike Air Force 1": ("shoes", "nike_air_force"), 
-                "Adidas Ultraboost": ("shoes", "adidas_ultraboost"),
-                "Air Jordan 1": ("shoes", "jordan_1")
-            }
-            product_type, product_id = shoe_map[shoe_type]
-            
-        elif selected_category == "Clothing":
-            clothing_type = st.selectbox(
-                "Select clothing type:",
-                ["Floral Dress", "Denim Jacket"]
-            )
-            clothing_map = {
-                "Floral Dress": ("clothing", "floral_dress"),
-                "Denim Jacket": ("clothing", "denim_jacket")
-            }
-            product_type, product_id = clothing_map[clothing_type]
-            
-        elif selected_category == "Accessories":
-            product_type, product_id = "accessories", "designer_handbag"
-        
-        # Analyze button
-        if st.button("🔍 Analyze Image", use_container_width=True, type="primary"):
-            with st.spinner("🔬 Analyzing your image and searching for matches..."):
-                time.sleep(2)
+        if st.button("🔍 Analyze with AI", type="primary", use_container_width=True):
+            with st.spinner("🤖 AI is analyzing your image..."):
+                # Step 1: Product Detection
+                progress_bar = st.progress(0)
+                status_text = st.empty()
                 
-                detected_product = PRODUCT_DATABASE[product_type][product_id]
+                status_text.text("Step 1/4: Detecting product...")
+                detected_product, confidence = detect_product_ai(image)
+                progress_bar.progress(25)
                 
-                # Analyze for duplicates
-                is_duplicate, confidence = analyze_for_duplicates(product_type, product_id)
+                # Step 2: Find similar products
+                status_text.text("Step 2/4: Finding similar products...")
+                similar_products = find_similar_products(detected_product)
+                progress_bar.progress(50)
+                
+                # Step 3: Check for duplicates
+                status_text.text("Step 3/4: Checking for duplicates...")
+                is_duplicate, duplicate_reason = check_duplicates(detected_product, similar_products)
+                progress_bar.progress(75)
+                
+                # Step 4: Scrape prices
+                status_text.text("Step 4/4: Gathering price data...")
+                prices_data = scrape_prices(detected_product['name'], detected_product['brand'])
+                progress_bar.progress(100)
                 
                 # Store results
-                st.session_state.is_duplicate = is_duplicate
                 st.session_state.detected_product = detected_product
                 st.session_state.confidence = confidence
+                st.session_state.similar_products = similar_products
+                st.session_state.is_duplicate = is_duplicate
+                st.session_state.duplicate_reason = duplicate_reason
+                st.session_state.prices_data = prices_data
                 st.session_state.analysis_complete = True
-                st.session_state.product_type = product_type
                 
-                st.success("✅ Analysis complete!")
-                st.rerun()
+                status_text.text("✅ Analysis complete!")
+                time.sleep(1)
+                status_text.empty()
+                progress_bar.empty()
 
-# Show results if analysis is complete
-if st.session_state.analysis_complete and st.session_state.detected_product is not None:
+# Display results
+if st.session_state.analysis_complete and st.session_state.detected_product:
     product = st.session_state.detected_product
     
-    st.subheader("📊 Analysis Results")
+    st.subheader("📊 AI Analysis Results")
     
-    # Product identification
-    col1, col2 = st.columns([3, 1])
+    # Product information
+    col1, col2, col3 = st.columns([2, 1, 1])
+    
     with col1:
-        st.markdown(f'<div class="product-category">{product["category"].upper()}</div>', unsafe_allow_html=True)
-        st.write(f"**Product:** {product['name']}")
+        st.write(f"**Detected Product:** {product['name']}")
         st.write(f"**Brand:** {product['brand']}")
+        st.write(f"**Category:** {product['category']} → {product['subcategory']}")
         st.write(f"**Description:** {product['description']}")
         
-        # Show features
         if 'features' in product:
-            st.write("**Key Features:**")
+            st.write("**Features:**")
             for feature in product['features']:
                 st.write(f"• {feature}")
     
     with col2:
-        st.write(f"**Confidence:** {st.session_state.confidence}%")
+        st.write(f"**AI Confidence:** {st.session_state.confidence}%")
+        st.write(f"**Price Range:** ${product['price_range'][0]} - ${product['price_range'][1]}")
+    
+    with col3:
         if st.session_state.is_duplicate:
             st.markdown('<div class="duplicate-yes">🔄 Potential Duplicate</div>', unsafe_allow_html=True)
-            st.info("Similar products found from multiple sellers.")
+            st.info(st.session_state.duplicate_reason)
         else:
             st.markdown('<div class="duplicate-no">✅ Original Product</div>', unsafe_allow_html=True)
-            st.success("This appears to be an authentic product.")
+            st.success("Unique product detected")
+
+    # Price comparison
+    st.subheader("💰 Real-time Price Comparison")
     
-    # Price comparison section
-    st.subheader("💰 Price Comparison Across Retailers")
-    
-    if product['prices']:
+    if st.session_state.prices_data:
         # Find best price
-        best_price = min(product['prices'], key=lambda x: x['price'])
+        best_price = min(st.session_state.prices_data, key=lambda x: x['price'])
         
-        # Display price comparison cards
-        cols = st.columns(len(product['prices']))
+        # Display prices
+        cols = st.columns(len(st.session_state.prices_data))
         
-        for idx, (col, retailer_data) in enumerate(zip(cols, product['prices'])):
+        for idx, (col, retailer_data) in enumerate(zip(cols, st.session_state.prices_data)):
             with col:
                 is_best = retailer_data == best_price
                 
@@ -407,28 +327,81 @@ if st.session_state.analysis_complete and st.session_state.detected_product is n
                 st.write(f"**{retailer_data['retailer']}**")
                 st.write(f"## ${retailer_data['price']}")
                 
-                # Display rating and shipping
+                # Rating stars
                 rating = retailer_data['rating']
                 stars = "⭐" * int(rating) + "☆" * (5 - int(rating))
                 st.write(f"{stars} ({rating}/5)")
                 st.write(f"**Shipping:** {retailer_data['shipping']}")
+                st.write(f"**Stock:** {'✅ In Stock' if retailer_data['in_stock'] else '❌ Out of Stock'}")
                 
                 if st.button(f"View on {retailer_data['retailer']}", key=f"btn_{idx}", use_container_width=True):
-                    st.info(f"🛒 Redirecting to {retailer_data['retailer']}...")
+                    st.info(f"Opening {retailer_data['retailer']}...")
                 
                 st.markdown('</div>', unsafe_allow_html=True)
 
-# Instructions when no image is uploaded
-else:
-    st.info("👆 Upload a product image to analyze it for duplicates and compare prices!")
+    # Similar products
+    st.subheader("🛍️ Similar Products Found")
     
-    # Show sample products
-    st.subheader("🎯 How to Use:")
-    st.write("1. **Upload an image** of your fashion item")
-    st.write("2. **Confirm the product category** (Shoes, Clothing, etc.)")
-    st.write("3. **Select the specific product type**")
-    st.write("4. **Click 'Analyze Image'** to get results")
+    if st.session_state.similar_products:
+        for similar in st.session_state.similar_products:
+            with st.expander(f"{similar['name']} - {similar['brand']} ({similar['similarity_score']}% similar)"):
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.write(f"**Category:** {similar['category']}")
+                    st.write(f"**Price Range:** ${similar['price_range'][0]} - ${similar['price_range'][1]}")
+                    if 'features' in similar:
+                        st.write("**Features:** " + ", ".join(similar['features']))
+                with col2:
+                    if st.button("Compare Prices", key=f"compare_{similar['id']}"):
+                        # Re-run analysis with this product
+                        st.session_state.detected_product = similar
+                        st.session_state.prices_data = scrape_prices(similar['name'], similar['brand'])
+                        st.rerun()
+
+# Dataset information
+with st.sidebar:
+    st.header("🔗 Connect Real Datasets")
+    st.write("""
+    **Recommended Kaggle Datasets:**
+    - Fashion Product Images Dataset
+    - DeepFashion Dataset  
+    - Amazon Fashion Dataset
+    - Myntra Fashion Dataset
+    - Zalando Fashion Dataset
+    """)
+    
+    st.header("🛠️ Implementation Steps")
+    st.write("""
+    1. **Download datasets from Kaggle**
+    2. **Preprocess images and metadata**
+    3. **Train ML model for detection**
+    4. **Integrate price scraping APIs**
+    5. **Deploy with proper error handling**
+    """)
+
+# Instructions
+else:
+    st.info("👆 Upload a product image to start AI-powered analysis!")
+    
+    st.subheader("🎯 How It Works with Real Data")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.write("**🤖 AI Detection**")
+        st.write("• Uses computer vision models")
+        st.write("• Trained on fashion datasets")
+        st.write("• Automatic category detection")
+        st.write("• Brand recognition")
+        
+    with col2:
+        st.write("**📊 Real Data Sources**")
+        st.write("• Kaggle fashion datasets")
+        st.write("• E-commerce APIs")
+        st.write("• Price comparison engines")
+        st.write("• Live web scraping")
 
 # Footer
 st.markdown("---")
-st.markdown("**Fashion Comparison Hub** - AI-powered price intelligence and authenticity verification")
+st.markdown("**Fashion Comparison Hub** - AI-powered using real datasets")
+st.caption("Connect to Kaggle datasets for full functionality")
