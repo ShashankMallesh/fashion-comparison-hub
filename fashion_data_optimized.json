@@ -1,0 +1,211 @@
+# Create comprehensive fashion_data_optimized.json
+import json
+
+comprehensive_data = [
+    # FOOTWEAR PRODUCTS
+    {
+        "id": 101,
+        "title": "Running Sneakers",
+        "description": "Lightweight running shoes with cushion technology",
+        "category": "Footwear",
+        "subcategory": "Athletic Shoes",
+        "articleType": "Sneakers",
+        "gender": "Unisex",
+        "color": "White",
+        "season": "All Season",
+        "usage": "Sports",
+        "year": 2024,
+        "price": 119.99,
+        "original_price": 149.99,
+        "discount": 20,
+        "rating": 4.6,
+        "review_count": 203,
+        "in_stock": True,
+        "sizes": ["7", "8", "9", "10", "11"],
+        "comparison": {
+            "competitors": [
+                {
+                    "store_id": "amazon",
+                    "store_name": "Amazon",
+                    "store_logo": "🛒",
+                    "price": 109.99,
+                    "original_price": 139.99,
+                    "discount": 21,
+                    "shipping": "Free shipping",
+                    "in_stock": True,
+                    "rating": 4.5,
+                    "review_count": 156,
+                    "delivery_time": "2-3 days",
+                    "trust_score": 96
+                },
+                {
+                    "store_id": "flipkart",
+                    "store_name": "Flipkart",
+                    "store_logo": "📦",
+                    "price": 125.50,
+                    "original_price": 159.00,
+                    "discount": 21,
+                    "shipping": "Free delivery",
+                    "in_stock": True,
+                    "rating": 4.3,
+                    "review_count": 89,
+                    "delivery_time": "3-4 days",
+                    "trust_score": 92
+                }
+            ],
+            "best_deal": {
+                "store_id": "amazon",
+                "store_name": "Amazon",
+                "price": 109.99,
+                "delivery_time": "2-3 days",
+                "rating": 4.5,
+                "trust_score": 96
+            },
+            "price_range": {
+                "min": 109.99,
+                "max": 125.50,
+                "average": 118.49
+            }
+        }
+    },
+    
+    # CLOTHING PRODUCTS
+    {
+        "id": 201,
+        "title": "Classic Cotton T-Shirt",
+        "description": "Comfortable cotton t-shirt for everyday wear",
+        "category": "Clothing",
+        "subcategory": "Tops",
+        "articleType": "Tshirts",
+        "gender": "Men",
+        "color": "Blue",
+        "season": "Summer",
+        "usage": "Casual",
+        "year": 2024,
+        "price": 29.99,
+        "original_price": 39.99,
+        "discount": 25,
+        "rating": 4.5,
+        "review_count": 128,
+        "in_stock": True,
+        "sizes": ["S", "M", "L", "XL"],
+        "comparison": {
+            "competitors": [
+                {
+                    "store_id": "amazon",
+                    "store_name": "Amazon",
+                    "store_logo": "🛒",
+                    "price": 27.99,
+                    "original_price": 35.99,
+                    "discount": 22,
+                    "shipping": "Free shipping",
+                    "in_stock": True,
+                    "rating": 4.4,
+                    "review_count": 89,
+                    "delivery_time": "2-3 days",
+                    "trust_score": 95
+                },
+                {
+                    "store_id": "myntra",
+                    "store_name": "Myntra",
+                    "store_logo": "👕",
+                    "price": 31.50,
+                    "original_price": 42.00,
+                    "discount": 25,
+                    "shipping": "Free shipping",
+                    "in_stock": True,
+                    "rating": 4.6,
+                    "review_count": 156,
+                    "delivery_time": "2 days",
+                    "trust_score": 96
+                }
+            ],
+            "best_deal": {
+                "store_id": "amazon",
+                "store_name": "Amazon",
+                "price": 27.99,
+                "delivery_time": "2-3 days",
+                "rating": 4.4,
+                "trust_score": 95
+            },
+            "price_range": {
+                "min": 27.99,
+                "max": 31.50,
+                "average": 29.83
+            }
+        }
+    },
+    
+    # ACCESSORIES
+    {
+        "id": 301,
+        "title": "Leather Crossbody Bag",
+        "description": "Genuine leather crossbody bag with multiple compartments",
+        "category": "Accessories",
+        "subcategory": "Bags",
+        "articleType": "Handbags",
+        "gender": "Women",
+        "color": "Brown",
+        "season": "All Season",
+        "usage": "Casual",
+        "year": 2024,
+        "price": 89.99,
+        "original_price": 119.99,
+        "discount": 25,
+        "rating": 4.7,
+        "review_count": 167,
+        "in_stock": True,
+        "sizes": ["One Size"],
+        "comparison": {
+            "competitors": [
+                {
+                    "store_id": "amazon",
+                    "store_name": "Amazon",
+                    "store_logo": "🛒",
+                    "price": 79.99,
+                    "original_price": 99.99,
+                    "discount": 20,
+                    "shipping": "Free shipping",
+                    "in_stock": True,
+                    "rating": 4.5,
+                    "review_count": 234,
+                    "delivery_time": "3-4 days",
+                    "trust_score": 94
+                },
+                {
+                    "store_id": "ajio",
+                    "store_name": "Ajio",
+                    "store_logo": "🔥",
+                    "price": 95.00,
+                    "original_price": 125.00,
+                    "discount": 24,
+                    "shipping": "Free delivery",
+                    "in_stock": True,
+                    "rating": 4.8,
+                    "review_count": 189,
+                    "delivery_time": "2-3 days",
+                    "trust_score": 93
+                }
+            ],
+            "best_deal": {
+                "store_id": "amazon",
+                "store_name": "Amazon",
+                "price": 79.99,
+                "delivery_time": "3-4 days",
+                "rating": 4.5,
+                "trust_score": 94
+            },
+            "price_range": {
+                "min": 79.99,
+                "max": 95.00,
+                "average": 87.50
+            }
+        }
+    }
+]
+
+# Save the comprehensive data
+with open('fashion_data_optimized.json', 'w') as f:
+    json.dump(comprehensive_data, f, indent=2)
+
+print("✅ Created comprehensive dataset with Footwear, Clothing, and Accessories")
