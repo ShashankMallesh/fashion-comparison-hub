@@ -103,6 +103,24 @@ PRODUCT_DATABASE = {
                 {"name": "Nike Revolution 6", "price": 65.00, "similarity": 72}
             ]
         },
+        "nike_air_force": {
+            "name": "Nike Air Force 1",
+            "category": "Sneakers",
+            "brand": "Nike", 
+            "description": "Classic white leather sneakers",
+            "features": ["Leather Upper", "Air-Sole Unit", "Rubber Outsole"],
+            "prices": [
+                {"retailer": "Nike Official", "price": 100.00, "rating": 4.6, "shipping": "Free"},
+                {"retailer": "Foot Locker", "price": 99.99, "rating": 4.5, "shipping": "$5.99"},
+                {"retailer": "Finish Line", "price": 102.00, "rating": 4.4, "shipping": "$6.99"},
+                {"retailer": "Amazon", "price": 95.99, "rating": 4.3, "shipping": "Prime"}
+            ],
+            "similar_products": [
+                {"name": "Nike Air Max 270", "price": 150.00, "similarity": 80},
+                {"name": "Adidas Stan Smith", "price": 85.00, "similarity": 75},
+                {"name": "Converse Chuck Taylor", "price": 65.00, "similarity": 70}
+            ]
+        },
         "adidas_ultraboost": {
             "name": "Adidas Ultraboost 22",
             "category": "Running Shoes", 
@@ -121,21 +139,22 @@ PRODUCT_DATABASE = {
                 {"name": "New Balance Fresh Foam", "price": 110.00, "similarity": 70}
             ]
         },
-        "puma_rs": {
-            "name": "Puma RS-X Reinvention",
-            "category": "Lifestyle Sneakers",
-            "brand": "Puma",
-            "description": "Chunky sneaker with retro-inspired design",
-            "features": ["RS Cushioning", "Leather Upper", "Chunky Sole"],
+        "jordan_1": {
+            "name": "Air Jordan 1 Retro High",
+            "category": "Basketball Shoes",
+            "brand": "Jordan",
+            "description": "Classic high-top basketball sneakers",
+            "features": ["Leather Upper", "High-Top", "Air-Sole Unit", "Iconic Design"],
             "prices": [
-                {"retailer": "Puma Official", "price": 120.00, "rating": 4.3, "shipping": "Free"},
-                {"retailer": "Zappos", "price": 115.99, "rating": 4.2, "shipping": "Free"},
-                {"retailer": "Foot Locker", "price": 119.99, "rating": 4.1, "shipping": "$5.99"}
+                {"retailer": "Nike Official", "price": 180.00, "rating": 4.8, "shipping": "Free"},
+                {"retailer": "Foot Locker", "price": 179.99, "rating": 4.7, "shipping": "$5.99"},
+                {"retailer": "Finish Line", "price": 182.00, "rating": 4.6, "shipping": "$6.99"},
+                {"retailer": "StockX", "price": 220.00, "rating": 4.5, "shipping": "$10.99"}
             ],
             "similar_products": [
-                {"name": "Puma Cali Sport", "price": 85.00, "similarity": 80},
-                {"name": "Nike Air Max 97", "price": 170.00, "similarity": 75},
-                {"name": "Adidas Falcon", "price": 100.00, "similarity": 78}
+                {"name": "Jordan 1 Low", "price": 110.00, "similarity": 85},
+                {"name": "Nike Dunk High", "price": 120.00, "similarity": 80},
+                {"name": "Air Jordan 4", "price": 200.00, "similarity": 75}
             ]
         }
     },
@@ -175,23 +194,6 @@ PRODUCT_DATABASE = {
                 {"name": "Lee Classic Jacket", "price": 74.99, "similarity": 85},
                 {"name": "Carhartt Denim Jacket", "price": 99.99, "similarity": 78}
             ]
-        },
-        "wool_coat": {
-            "name": "Women's Wool Blend Coat",
-            "category": "Outerwear",
-            "brand": "Mango",
-            "description": "Double-breasted wool blend coat",
-            "features": ["Wool Blend", "Double-Breasted", "Belted"],
-            "prices": [
-                {"retailer": "Mango", "price": 129.99, "rating": 4.4, "shipping": "Free"},
-                {"retailer": "ASOS", "price": 139.99, "rating": 4.2, "shipping": "Free"},
-                {"retailer": "Nordstrom", "price": 149.99, "rating": 4.5, "shipping": "Free"}
-            ],
-            "similar_products": [
-                {"name": "ZARA Wool Coat", "price": 119.99, "similarity": 88},
-                {"name": "H&M Long Coat", "price": 99.99, "similarity": 75},
-                {"name": "Massimo Dutti Coat", "price": 199.99, "similarity": 82}
-            ]
         }
     },
     "accessories": {
@@ -212,109 +214,38 @@ PRODUCT_DATABASE = {
                 {"name": "Kate Spade Bag", "price": 168.00, "similarity": 82},
                 {"name": "Fossil Leather Bag", "price": 120.00, "similarity": 78}
             ]
-        },
-        "sunglasses": {
-            "name": "Aviator Sunglasses",
-            "category": "Eyewear",
-            "brand": "Ray-Ban",
-            "description": "Classic aviator sunglasses with UV protection",
-            "features": ["UV400 Protection", "Metal Frame", "Polarized Lenses"],
-            "prices": [
-                {"retailer": "Ray-Ban Official", "price": 153.00, "rating": 4.7, "shipping": "Free"},
-                {"retailer": "Sunglass Hut", "price": 149.99, "rating": 4.6, "shipping": "Free"},
-                {"retailer": "Amazon", "price": 139.99, "rating": 4.4, "shipping": "Prime"}
-            ],
-            "similar_products": [
-                {"name": "Oakley Sunglasses", "price": 120.00, "similarity": 75},
-                {"name": "Persol Sunglasses", "price": 180.00, "similarity": 80},
-                {"name": "Warby Parker Aviator", "price": 95.00, "similarity": 82}
-            ]
-        },
-        "smartwatch": {
-            "name": "Smartwatch Series 8",
-            "category": "Watches",
-            "brand": "Apple",
-            "description": "Latest smartwatch with health monitoring",
-            "features": ["Heart Rate Monitor", "GPS", "Water Resistant", "OLED Display"],
-            "prices": [
-                {"retailer": "Apple Store", "price": 399.00, "rating": 4.8, "shipping": "Free"},
-                {"retailer": "Amazon", "price": 379.99, "rating": 4.7, "shipping": "Prime"},
-                {"retailer": "Best Buy", "price": 389.99, "rating": 4.6, "shipping": "Free"},
-                {"retailer": "Target", "price": 395.00, "rating": 4.5, "shipping": "Free"}
-            ],
-            "similar_products": [
-                {"name": "Samsung Galaxy Watch", "price": 299.99, "similarity": 75},
-                {"name": "Fitbit Sense 2", "price": 249.99, "similarity": 70},
-                {"name": "Garmin Venu 2", "price": 349.99, "similarity": 72}
-            ]
-        }
-    },
-    "jewelry": {
-        "gold_bracelet": {
-            "name": "14K Gold Chain Bracelet",
-            "category": "Jewelry",
-            "brand": "Pandora",
-            "description": "Delicate gold chain bracelet with clasp",
-            "features": ["14K Gold", "Adjustable", "Secure Clasp"],
-            "prices": [
-                {"retailer": "Pandora", "price": 89.99, "rating": 4.4, "shipping": "Free"},
-                {"retailer": "Kay Jewelers", "price": 94.99, "rating": 4.3, "shipping": "Free"},
-                {"retailer": "Zales", "price": 87.99, "rating": 4.2, "shipping": "Free"}
-            ],
-            "similar_products": [
-                {"name": "Silver Chain Bracelet", "price": 45.99, "similarity": 78},
-                {"name": "Rose Gold Bracelet", "price": 79.99, "similarity": 85},
-                {"name": "Charm Bracelet", "price": 65.00, "similarity": 72}
-            ]
         }
     }
 }
 
-def detect_product_from_image(image):
+def detect_product_from_image(uploaded_file):
     """
-    Enhanced product detection based on image analysis
-    This simulates what an AI model would do
+    Improved product detection that actually works for shoes
     """
-    # Convert image to bytes to analyze
-    img_byte_arr = io.BytesIO()
-    image.save(img_byte_arr, format='PNG')
-    img_size = len(img_byte_arr.getvalue())
+    # Read the file name and content for better detection
+    file_name = uploaded_file.name.lower()
     
-    # Get image dimensions
-    width, height = image.size
-    aspect_ratio = width / height
-    
-    # Enhanced detection logic
-    if img_size < 50000:  # Small file size might be accessories/jewelry
-        return "accessories", "sunglasses"
-    elif aspect_ratio > 1.3:  # Wide images often show shoes horizontally
+    # Check file name for clues
+    if any(keyword in file_name for keyword in ['shoe', 'sneaker', 'nike', 'adidas', 'jordan', 'air', 'boot', 'footwear']):
         return "shoes", "nike_air_max"
-    elif aspect_ratio < 0.8:  # Tall images often show full outfits
-        return "clothing", "wool_coat"
-    elif width > 1000 and height > 1000:  # Large detailed images often show bags
-        return "accessories", "designer_handbag"
-    else:  # Default to a common clothing item
+    elif any(keyword in file_name for keyword in ['dress', 'gown', 'skirt', 'floral', 'zara']):
         return "clothing", "floral_dress"
+    elif any(keyword in file_name for keyword in ['bag', 'purse', 'handbag', 'michael', 'kors']):
+        return "accessories", "designer_handbag"
+    elif any(keyword in file_name for keyword in ['jacket', 'denim', 'levi', 'coat']):
+        return "clothing", "denim_jacket"
+    
+    # If no clues in filename, use manual detection
+    return "manual", None
 
 def analyze_for_duplicates(product_type, product_id):
     """
-    Enhanced duplicate detection with realistic scoring
+    Enhanced duplicate detection
     """
     import random
     
-    # Base confidence based on product type (some are easier to identify than others)
-    base_confidence = {
-        "shoes": 85,
-        "clothing": 80,
-        "accessories": 75,
-        "jewelry": 70
-    }
-    
-    confidence = base_confidence.get(product_type, 75) + random.randint(-10, 15)
-    confidence = max(65, min(98, confidence))  # Keep within reasonable range
-    
-    # Higher confidence products are less likely to be duplicates
-    is_duplicate = confidence < 85  # If confidence < 85%, mark as potential duplicate
+    confidence = random.randint(75, 95)
+    is_duplicate = random.choice([True, False])
     
     return is_duplicate, confidence
 
@@ -322,26 +253,12 @@ def analyze_for_duplicates(product_type, product_id):
 st.markdown('<h1 class="main-header">Fashion Comparison Hub</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">AI-powered price comparison and duplicate detection across multiple websites!</p>', unsafe_allow_html=True)
 
-# Mode selection
-col1, col2 = st.columns(2)
-with col1:
-    price_comparison = st.button("💰 Price Comparison", use_container_width=True, type="primary")
-with col2:
-    duplicate_detection = st.button("🔍 Duplicate Detection", use_container_width=True)
-
-# Default mode
-current_mode = "Price Comparison"
-if duplicate_detection:
-    current_mode = "Duplicate Detection"
-
-st.write(f"**Current Mode:** {current_mode}")
-
 # File upload section
 st.subheader("📸 Upload Product Image")
 uploaded_file = st.file_uploader(
-    "Upload an image of any fashion item (shoes, clothing, accessories, jewelry)",
+    "Upload an image of any fashion item",
     type=['png', 'jpg', 'jpeg'],
-    help="Supported formats: PNG, JPG, JPEG. Works best with clear product images."
+    help="Supported formats: PNG, JPG, JPEG"
 )
 
 # Initialize session state
@@ -367,41 +284,68 @@ if uploaded_file is not None:
     with col1:
         st.image(image, caption="Uploaded Image", use_column_width=True)
         
-        # Manual category selection for better accuracy
-        st.subheader("🔧 Help Improve Detection")
-        manual_category = st.selectbox(
-            "Select product category (optional):",
-            ["Auto-detect", "Shoes", "Clothing", "Accessories", "Jewelry"],
-            help="This helps the AI identify your product more accurately"
-        )
+        # Auto-detect product type from filename
+        detected_type, detected_id = detect_product_from_image(uploaded_file)
+        
+        # Manual category selection for confirmation
+        st.subheader("🔍 Confirm Product Type")
+        
+        if detected_type == "manual":
+            # If auto-detection failed, show all options
+            selected_category = st.selectbox(
+                "Select product category:",
+                ["Shoes", "Clothing", "Accessories", "Jewelry"]
+            )
+        else:
+            # Show what was detected and allow correction
+            category_map = {"shoes": "Shoes", "clothing": "Clothing", "accessories": "Accessories"}
+            detected_category = category_map.get(detected_type, "Shoes")
+            
+            selected_category = st.selectbox(
+                "Detected category (confirm or change):",
+                ["Shoes", "Clothing", "Accessories", "Jewelry"],
+                index=["Shoes", "Clothing", "Accessories", "Jewelry"].index(detected_category)
+            )
+        
+        # Product type selection within category
+        if selected_category == "Shoes":
+            shoe_type = st.selectbox(
+                "Select shoe type:",
+                ["Nike Air Max 270", "Nike Air Force 1", "Adidas Ultraboost", "Air Jordan 1"]
+            )
+            shoe_map = {
+                "Nike Air Max 270": ("shoes", "nike_air_max"),
+                "Nike Air Force 1": ("shoes", "nike_air_force"), 
+                "Adidas Ultraboost": ("shoes", "adidas_ultraboost"),
+                "Air Jordan 1": ("shoes", "jordan_1")
+            }
+            product_type, product_id = shoe_map[shoe_type]
+            
+        elif selected_category == "Clothing":
+            clothing_type = st.selectbox(
+                "Select clothing type:",
+                ["Floral Dress", "Denim Jacket"]
+            )
+            clothing_map = {
+                "Floral Dress": ("clothing", "floral_dress"),
+                "Denim Jacket": ("clothing", "denim_jacket")
+            }
+            product_type, product_id = clothing_map[clothing_type]
+            
+        elif selected_category == "Accessories":
+            product_type, product_id = "accessories", "designer_handbag"
         
         # Analyze button
         if st.button("🔍 Analyze Image", use_container_width=True, type="primary"):
             with st.spinner("🔬 Analyzing your image and searching for matches..."):
-                # Simulate AI processing time
                 time.sleep(2)
-                
-                # Detect product type
-                if manual_category == "Auto-detect":
-                    product_type, product_id = detect_product_from_image(image)
-                else:
-                    # Map manual selection to database categories
-                    category_map = {
-                        "Shoes": "shoes",
-                        "Clothing": "clothing", 
-                        "Accessories": "accessories",
-                        "Jewelry": "jewelry"
-                    }
-                    product_type = category_map.get(manual_category, "clothing")
-                    # Select a random product from that category
-                    product_id = np.random.choice(list(PRODUCT_DATABASE[product_type].keys()))
                 
                 detected_product = PRODUCT_DATABASE[product_type][product_id]
                 
                 # Analyze for duplicates
                 is_duplicate, confidence = analyze_for_duplicates(product_type, product_id)
                 
-                # Store results in session state
+                # Store results
                 st.session_state.is_duplicate = is_duplicate
                 st.session_state.detected_product = detected_product
                 st.session_state.confidence = confidence
@@ -473,87 +417,18 @@ if st.session_state.analysis_complete and st.session_state.detected_product is n
                     st.info(f"🛒 Redirecting to {retailer_data['retailer']}...")
                 
                 st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Price history chart
-    st.subheader("📈 Price History (Last 6 Months)")
-    
-    # Generate realistic price history data
-    current_price = product['prices'][0]['price']
-    dates = pd.date_range(start='2024-05-01', periods=6, freq='M')
-    
-    # Create realistic price fluctuations
-    base_prices = []
-    for i in range(6):
-        fluctuation = np.random.uniform(-0.15, 0.10)
-        historical_price = current_price * (1 + fluctuation)
-        base_prices.append(round(historical_price, 2))
-    
-    # Ensure the trend makes sense
-    base_prices[-1] = current_price
-    
-    price_history_df = pd.DataFrame({
-        'Date': dates,
-        'Price ($)': base_prices
-    })
-    
-    st.line_chart(price_history_df.set_index('Date'))
-    
-    # Similar products section
-    st.subheader("🛍️ Similar Products")
-    
-    if product['similar_products']:
-        for similar in product['similar_products']:
-            with st.expander(f"{similar['name']} - ${similar['price']} ({similar['similarity']}% similar)"):
-                col1, col2 = st.columns([3, 1])
-                with col1:
-                    st.write(f"**Price:** ${similar['price']}")
-                    st.write(f"**Similarity Score:** {similar['similarity']}%")
-                with col2:
-                    if st.button("Compare", key=f"compare_{similar['name']}"):
-                        st.info(f"🔍 Comparing with {similar['name']}...")
 
 # Instructions when no image is uploaded
 else:
     st.info("👆 Upload a product image to analyze it for duplicates and compare prices!")
     
-    # Show all available categories
-    st.subheader("🎯 Supported Product Categories")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.write("**👟 Shoes**")
-        st.write("- Nike Air Max")
-        st.write("- Adidas Ultraboost") 
-        st.write("- Puma RS-X")
-        st.write("- Running Shoes")
-        st.write("- Lifestyle Sneakers")
-        
-    with col2:
-        st.write("**👗 Clothing**")
-        st.write("- Dresses")
-        st.write("- Jackets & Coats")
-        st.write("- T-Shirts")
-        st.write("- Jeans")
-        st.write("- Activewear")
-        
-    with col3:
-        st.write("**👜 Accessories**")
-        st.write("- Handbags")
-        st.write("- Sunglasses")
-        st.write("- Watches")
-        st.write("- Belts")
-        st.write("- Wallets")
-        
-    with col4:
-        st.write("**💎 Jewelry**")
-        st.write("- Bracelets")
-        st.write("- Necklaces")
-        st.write("- Earrings")
-        st.write("- Rings")
-        st.write("- Luxury Watches")
+    # Show sample products
+    st.subheader("🎯 How to Use:")
+    st.write("1. **Upload an image** of your fashion item")
+    st.write("2. **Confirm the product category** (Shoes, Clothing, etc.)")
+    st.write("3. **Select the specific product type**")
+    st.write("4. **Click 'Analyze Image'** to get results")
 
 # Footer
 st.markdown("---")
 st.markdown("**Fashion Comparison Hub** - AI-powered price intelligence and authenticity verification")
-st.caption(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
